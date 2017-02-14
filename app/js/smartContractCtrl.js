@@ -33,6 +33,12 @@ app.controller('smartContractController', [
             $scope.showChart = true;
             $scope.proposalID = 0;
 
+            // prevent using Dapp not from Mist
+            if (typeof mist !== 'undefined'){
+                $scope.alertDanger = 'Please use Mist browser to open this page';
+                return;
+            }
+
             // First we need to create a web3 instance, setting a provider.
             // To make sure you don't overwrite the already set provider when in mist,
             // check first if the web3 is available:
