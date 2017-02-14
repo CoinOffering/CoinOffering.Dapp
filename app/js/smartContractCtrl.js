@@ -35,11 +35,14 @@ app.controller('smartContractController', [
 
             // prevent using Dapp not from Mist
             // see: https://github.com/ethereum/mist/blob/develop/MISTAPI.md 
-            if (typeof mist == 'undefined') {
+            $scope.mistDetected = false;
+            if (typeof mist == 'undefined') {                
                 var errorMessage = 'Please use Mist browser to open this page';
                 $log.error(errorMessage);
                 $scope.alertDanger = errorMessage;
                 return;
+            } else {
+                $scope.mistDetected = true;
             }
 
             // First we need to create a web3 instance, setting a provider.
