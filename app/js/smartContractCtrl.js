@@ -25,14 +25,6 @@ app.controller('smartContractController', [
             $scope.alertWarning = null;
             $scope.alertDanger = null;
 
-            // interface settings:
-            $scope.showAllAccounts = true;
-            $scope.showAllShareholders = true;
-            $scope.showAllEvents = true;
-            $scope.showAllProposals = true;
-            $scope.showChart = true;
-            $scope.proposalID = 0;
-
             // prevent using Dapp not from Mist
             // see: https://github.com/ethereum/mist/blob/develop/MISTAPI.md 
             $scope.mistDetected = false;
@@ -79,6 +71,14 @@ app.controller('smartContractController', [
                 $log.error("Ethereum node not detected");
                 $scope.alertDanger("Ethereum node not detected");
             }
+
+            // interface settings:
+            $scope.showAllAccounts = true;
+            $scope.showAllShareholders = true;
+            $scope.showAllEvents = true;
+            $scope.showAllProposals = true;
+            $scope.showChart = true;
+            $scope.proposalID = 0;
 
             var contractAddressMainNet = '0x684282178b1d61164febcf9609ca195bef9a33b5';
             var contractAddressTestNet = '0x47d55ec9E1d5DEb893D3943e6d84011E488b1A37';
