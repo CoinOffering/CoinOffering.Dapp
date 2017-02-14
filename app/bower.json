@@ -1,0 +1,22 @@
+{
+  "name": "CoinOffering.Dapp",
+  "authors": [
+    "ageyev@coinoffering.com"
+  ],
+  "description": "Dapp for CoinOffering cryptoshares",
+  "main": "app.js",
+  "license": "MIT",
+  "homepage": "coinoffering.com",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "resolutions": {
+    "angular": "^1.6.2",
+    "marked": "^0.3.6"
+  }
+}
