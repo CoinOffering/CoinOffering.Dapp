@@ -33,7 +33,8 @@ app.config(function ($stateProvider, // from ui.router
     $locationProvider.hashPrefix('');
 
     $sceDelegateProvider.resourceUrlWhitelist([
-            'self' // Allow same origin resource loads
+            'self', // Allow same origin resource loads
+            'https://raw.githubusercontent.com/CoinOffering/coinoffering.github.io/master/dapp/views/home.content.en.md'
         ]
     );
 
