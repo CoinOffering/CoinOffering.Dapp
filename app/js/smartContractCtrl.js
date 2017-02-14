@@ -34,7 +34,8 @@ app.controller('smartContractController', [
             $scope.proposalID = 0;
 
             // prevent using Dapp not from Mist
-            if (typeof mist !== 'undefined'){
+            // see: https://github.com/ethereum/mist/blob/develop/MISTAPI.md 
+            if (typeof mist == 'undefined') {
                 var errorMessage = 'Please use Mist browser to open this page';
                 $log.error(errorMessage);
                 $scope.alertDanger = errorMessage;
