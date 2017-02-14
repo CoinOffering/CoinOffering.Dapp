@@ -35,7 +35,9 @@ app.controller('smartContractController', [
 
             // prevent using Dapp not from Mist
             if (typeof mist !== 'undefined'){
-                $scope.alertDanger = 'Please use Mist browser to open this page';
+                var errorMessage = 'Please use Mist browser to open this page';
+                $log.error(errorMessage);
+                $scope.alertDanger = errorMessage;
                 return;
             }
 
