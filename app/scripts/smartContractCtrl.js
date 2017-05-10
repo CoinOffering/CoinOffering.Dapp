@@ -215,7 +215,8 @@ app.controller('smartContractController', [
 
             $scope.etherOnAccountOnBlockchain = {}; // to store acc balances in tokens
             $scope.getEthBalanceOf = function (address) {
-                var currentAccount = address.toString();
+                $log.debug('getEthBalanceOf() started for address: ' + address);
+                var currentAccount = address;
                 $rootScope.web3.eth.getBalance(currentAccount, function (error, result) {
                         if (result) {
                             $scope.etherOnAccountOnBlockchain[currentAccount] =
@@ -234,12 +235,14 @@ app.controller('smartContractController', [
             }; // end of $scope.getEthBalanceOf;
 
             $scope.refreshBalances = function () {  // both ether and tokens for USER accounts
-                $log.debug('refreshing balances:');
+                $log.debug('refreshBalances() started');
                 for (var i = 0; i < $rootScope.web3.eth.accounts.length; i++) { // safe for MetaMusk
-                    // acc ETH
-                    $scope.getEthBalanceOf($rootScope.web3.eth.accounts[i]);
+                    var acc = $rootScope.web3.eth.accounts[i];
+                    $log.debug('[refreshBalances()] acc: ' + acc);
                     // acc tokens
-                    $scope.getBalanceOf($rootScope.web3.eth.accounts[i]);
+                    $scope.getBalanceOf(acc);
+                    // acc ETH
+                    $scope.getEthBalanceOf(acc);
                 }
             };
 

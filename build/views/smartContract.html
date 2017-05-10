@@ -137,7 +137,7 @@
                             <div ng-click="setDefaultAccount(acc)" title="Click to set as default">
                                 <a href="" style="font-family: Courier, monospace"
                                    ng-class="{selected: acc==web3.eth.defaultAccount}">
-                                    ({{$index}}) {{acc}} : ETH {{etherOnAccountOnBlockchain[web3.eth.defaultAccount]}}
+                                    ({{$index}}) {{acc}} : ETH {{etherOnAccountOnBlockchain[acc]}}
                                     : {{balanceOf[acc]}} shares(s)
                                     <br>
                                 </a>
