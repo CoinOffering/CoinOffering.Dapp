@@ -4,8 +4,8 @@ Corporation SmartContract.
 developed by: cryptonomica.net, 2016
 
 used sources:
-https://www.ethereum.org/token // example of the token standart
-https://github.com/ethereum/EIPs/issues/20 // token standart description
+https://www.ethereum.org/token // example of the token standard
+https://github.com/ethereum/EIPs/issues/20 // token standard description
 https://www.ethereum.org/dao // voting example
 */
 
@@ -13,8 +13,8 @@ https://www.ethereum.org/dao // voting example
 How to deploy (estimated: 1,641,268 gas):
 1) For development: use https://ethereum.github.io/browser-solidity/
 2) For testing on Testnet: Open the default ('Mist') wallet (if you are only testing, go to the menu develop > network > testnet), go to the Contracts tab and then press deploy contract, and on the solidity code box, paste the code above.
-3) For prodaction, like in 2) but on Main Network.
-To verify your deployed smartcontract source code for public go to:
+3) For production, like in 2) but on Main Network.
+To verify your deployed smart contract source code for public go to:
 https://etherscan.io/verifyContract
 */
 
@@ -22,13 +22,13 @@ https://etherscan.io/verifyContract
 //  this is expected from another contract,
 //  if it wants to spend tokens (shares) of behalf of the token owner
 //  in our contract
-//  f.e.: a 'multisig' SmartContract for transfering shares from seller
+//  f.e.: a 'multisig' SmartContract for transfer shares from seller
 //  to buyer
 contract tokenRecipient {
-    function receiveApproval(address _from,     // sharehoder
-    uint256 _value,    // number of shares
-    address _share,    // - will be this contract
-    bytes _extraData); //
+    function receiveApproval(address _from,     // shareholder
+                             uint256 _value,    // number of shares
+                             address _share,    // - will be this contract
+                             bytes _extraData); // wrong, https://ethereum.stackexchange.com/a/11771/1964
 }
 
 contract Corporation {
@@ -74,7 +74,8 @@ contract Corporation {
 
     /* --------------- Shares management ------ */
 
-    // This generates a public event on the blockchain that will notify clients. In 'Mist' SmartContract page enable 'Watch contract events'
+    // This generates a public event on the blockchain that will notify clients.
+    // In 'Mist' SmartContract page enable 'Watch contract events'
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     function getCurrentShareholders() returns (address[]){
@@ -83,8 +84,8 @@ contract Corporation {
             if (balanceOf[shareholder[i]] > 0){
                 activeShareholdersArray.push(shareholder[i]);
             }
-        } return activeShareholdersArray;
-    }
+            } return activeShareholdersArray;
+        }
 
     /*  -- can be used to transfer shares to new contract
     together with getCurrentShareholders() */
@@ -105,11 +106,11 @@ contract Corporation {
     }
 
 
-    /* ---- Transfer shares to another adress ----
+    /* ---- Transfer shares to another address ----
     (shareholder's address calls this)
-    */
-    function transfer(address _to, uint256 _value) {
-        // check arguments:
+    */ // --- Transaction cost ~ 37046 gas
+    function transfer(address _to, uint256 _value) { // should be: returns (bool success)
+            // check arguments:
         if (_value < 1) throw;
         if (this == _to) throw; // do not send shares to contract itself;
         if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
@@ -130,13 +131,15 @@ contract Corporation {
     /* Allow another contract to spend some shares in your behalf
     (shareholder calls this) */
     function approveAndCall(address _spender, // another contract's adress
-    uint256 _value, // number of shares
-    bytes _extraData) // data for another contract
+                            uint256 _value, // number of shares
+                            // see: https://ethereum.stackexchange.com/a/11771/1964
+                            // see https://github.com/ethereum/EIPs/issues/20 - 'approve'
+                            bytes _extraData) // <<< wrong
     returns (bool success) {
         // msg.sender - account owner who gives allowance
         // _spender   - address of another contract
         // it writes in "allowance" that this owner allows another
-        // contract (_spender) to spend thi amont (_value) of shares
+        // contract (_spender) to spend thi amount (_value) of shares
         // in his behalf
         allowance[msg.sender][_spender] = _value;
         // 'spender' is another contract that implements code
@@ -146,23 +149,23 @@ contract Corporation {
         // of another contract to send information about
         // allowance
         spender.receiveApproval(msg.sender, // shares owner
-        _value,     // number of shares
-        this,       // this contract's adress
-        _extraData);// data from shares owner
+                                _value,     // number of shares
+                                this,       // this contract's address
+                                _extraData);// data from shares owner
         return true;
     }
 
     /* this function can be called from another contract, after it
-    have allowance to transfer shares in behalf of sharehoder  */
+    have allowance to transfer shares in behalf of shareholder  */
     function transferFrom(address _from,
-    address _to,
-    uint256 _value)
+                          address _to,
+                          uint256 _value)
     returns (bool success) {
 
         // Check arguments:
         // should one share or more
         if (_value < 1) throw;
-        // do not send shares to this contract itself;
+        // do not send shares to this contract itself, ! but it can send to original token holder to remove allowances
         if (this == _to) throw;
         // Check if the sender has enough
         if (balanceOf[_from] < _value) throw;
@@ -215,14 +218,14 @@ contract Corporation {
 
 
     event ProposalAdded(uint256 proposalID,
-    address initiator,
-    string description,
-    uint256 deadline);
+                        address initiator,
+                        string description,
+                        uint256 deadline);
 
     event VotingFinished(uint256 proposalID, uint256 votes);
 
     function makeNewProposal(string _proposalDescription,
-    uint256 _debatingPeriodInMinutes)
+                             uint256 _debatingPeriodInMinutes)
     returns (uint256){
         // only shareholder with one or more shares can make a proposal
         // !!!! can be more then one share required
