@@ -17,7 +17,7 @@ contract Erc20TokensContract {
 contract TokenExchange {
 
     /* list of allowed tokens contract addresses*/
-    mapping (address => bool) public isManager;
+    mapping (address => bool) public managers;
 
     /* list of allowed tokens contract addresses*/
     mapping (address => bool) public allowedTokens;
@@ -33,6 +33,7 @@ contract TokenExchange {
 
     /* public variables  */
     address public owner;
+
 
     /* constructor */
     function TokenExchange(){
@@ -54,32 +55,24 @@ contract TokenExchange {
     /* Manager functions */
 
     function allowTokenContract(address _tokenContractAddress) returns (bool){
-        if (msg.sender != owner) {throw;}
+        if (msg.sender != owner || !managers[msg.sender]) {throw;}
         allowedTokens[_tokenContractAddress] = true;
-        NewTokenContract(_tokenContractAddress, msg.sender);
         return true;
     }
-
-    event NewTokenContract(address tokenContractAddress, address addedBy);
 
     /* Interaction with token contract address */
 
     /* this should be called from contract with tokens when 'approveAndCall' called*/
-    event ReceiveApproval(address from, uint256 value, address tokenContractAddress, bytes extraData);
-
     function receiveApproval(address _from, // shareholder
     uint256 _value, // number of tokens
     address _tokenContractAddress, // - contract, than manages tokens
     bytes _extraData){
         // !!! only allowed tokens can be added to this Exchange :
         if (!allowedTokens[_tokenContractAddress]) {throw;}
-
         // message should be from contract that manages tokens
-        if (msg.sender != _tokenContractAddress) {throw;}
-
+        // if (msg.sender != _tokenContractAddress) {throw;}
         // transaction should by initiated by tokens owner only
         // if (tx.origin != _from) {throw;}
-
         // tokens value have to be > 0
         if (_value <= 0) {throw;}
         // if everything is O.K., add to tokenOwner balances
@@ -109,6 +102,22 @@ contract TokenExchange {
         }
         else {throw;}
         return result;
+    }
+
+    function createSellingProposition(address _tokenContractAddress, uint _quantity, uint _pricePerToken, uint _validForMinutes) {
+        // check args
+        if (tokensOwnerBalances[msg.sender][_tokenContractAddress] < _quantity) {throw;}
+        //
+        sellingPropositionsNumber = sellingPropositionsNumber + 1;
+
+        sellingPropositions[sellingPropositionsNumber] = SellingProposition({
+        seller : msg.sender,
+        tokenContractAddress : _tokenContractAddress,
+        quantity : _quantity,
+        pricePerToken : _pricePerToken,
+        created : now, // block.timestamp (absolute unix timestamps (seconds since 1970-01-01))
+        validUntil : now + (_validForMinutes * 1 minutes)
+        });
     }
 
 }
